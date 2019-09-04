@@ -4,9 +4,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import java.sql.PreparedStatement;
-
 import java.sql.Connection;
 
 public class jdbcTestDemo1 {
@@ -14,10 +11,10 @@ public class jdbcTestDemo1 {
 	public static void main(String[] args) {
 		selectALL();
 		//可以当作登录检验
-		System.out.println(selectByUsernamePassword2("小红", "234"));
-		System.out.println(selectByUsernamePassword2("小红", "1234"));
+		System.out.println(selectByUsernamePassword("小红", "234"));
+		System.out.println(selectByUsernamePassword("小红", "1234"));
 		//sql注入
-		System.out.println(selectByUsernamePassword2("sfsaf", "fsafsa' or '1'='1"));
+		System.out.println(selectByUsernamePassword("sfsaf", "fsafsa' or '1'='1"));
 
 	}
 
@@ -89,7 +86,6 @@ public class jdbcTestDemo1 {
 	}
 	
 	public static boolean selectByUsernamePassword(String username,String password)
-
 	{
 		String url = "jdbc:mysql://localhost:3306/web01";
 		String sql = "select * from user where username='"+username+"'and password = '"+password+"'";
@@ -148,28 +144,4 @@ public class jdbcTestDemo1 {
 		
 	}
 
-	//将statement换成PreparedStatement来避免sql注入问题，提高安全性
-	public static boolean selectByUsernamePassword2(String username,String password)
-	{
-		
-		String url = "jdbc:mysql://localhost:3306/web01";
-		String sql  = "select * from user where username =? and password = ?";
-		try(Connection con = DriverManager.getConnection(url,"root","123456");PreparedStatement ppst =con.prepareStatement(sql)) 
-		
-		{
-			Class.forName("com.mysql.jdbc.Driver");
-		ppst.setString(1, username);
-		ppst.setString(2,password);
-		ResultSet result = ppst.executeQuery();
-		if(result.next()) return true;
-		else return false;
-			
-		} catch (Exception e) {
-			System.out.println("驱动器启动失败。。。");
-			e.printStackTrace();
-		}
-		return false;
-		
-		
-	}
 }
